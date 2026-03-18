@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ [SERVER DEV] ThaoNoob</title>
+    <style>
+        /* --- PHONG CÁCH CSS --- */
+        
+        body, html {
+            height: 100%;
+            margin: 0;
+            /* Cố gắng sử dụng font Minecraft, nếu không có thì dùng font pixel mặc định */
+            font-family: 'Minecraftia', 'Courier New', Courier, monospace;
+            color: white;
+            background-color: #0c001a; /* Màu tối dự phòng nếu nền không tải được */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Ngăn chặn thanh cuộn để giữ bố cục */
+        }
+
+        /* Nền phong cảnh Minecraft ban đêm, lấy cảm hứng từ ảnh image_2.png */
+        .minecraft-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* BẠN CẦN CHUẨN BỊ ẢNH NỀN NÀY */
+            background-image: url('background.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            /* Làm tối nền để chữ nổi bật hơn */
+            filter: brightness(60%); 
+        }
+
+        /* Khung chứa nội dung chính, căn giữa màn hình */
+        .container {
+            position: relative;
+            max-width: 900px;
+            width: 90%;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        /* Khu vực Tiêu đề (Header): Chứa Avatar và Tên */
+        header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-out; /* Hiệu ứng hiện dần */
+        }
+
+        /* Thẻ đại diện (Avatar card) */
+        .avatar-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 130px;
+            height: 130px;
+            border: 6px solid white; /* Viền trắng pixel đặc trưng */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6); /* Hiệu ứng bóng đổ */
+            margin-right: 30px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.1); /* Nền mờ cho avatar */
+        }
+
+        /* Hình ảnh Avatar */
+        .avatar-img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+        }
+
+        /* Nhóm Tên và Tagline */
+        .title-group {
+            flex-grow: 1;
+        }
+
+        /* Tiêu đề chính: Tên người chơi */
+        .main-title {
+            font-size: 2.8rem;
+            margin: 0;
+            text-shadow: 3px 3px 0 #000; /* Đổ bóng chữ đen đậm */
+        }
+
+        /* Dòng giới thiệu ngắn (Tagline) */
+        .tagline {
+            font-size: 1.3rem;
+            color: #d1d1d1;
+            margin: 0;
+            margin-top: 8px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        /* --- CÁC KHỐI THÔNG TIN (Info Blocks) --- */
+
+        /* Kiểu dáng chung cho các khối thông tin */
+        .info-block {
+            background-color: rgba(0, 0, 0, 0.75); /* Nền đen trong suốt cho khối */
+            border: 4px solid #fff; /* Viền pixel trắng */
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.6); /* Bóng đổ pixel */
+            animation: slideInUp 0.8s ease-out; /* Hiệu ứng trượt lên */
+        }
+
+        /* Tiêu đề cho các khối: Mô phỏng khối đá/bê tông */
+        .block-title {
+            background-color: #3e3e42; /* Màu xám bê tông của khối */
+            color: white;
+            border: 3px solid white;
+            padding: 8px 18px;
+            margin: -30px -20px 15px -20px; /* Đẩy tiêu đề lên trên viền của khối */
+            display: inline-block;
+            font-size: 1.1rem;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.6);
+            text-transform: uppercase; /* Chữ in hoa */
+        }
+
+        /* --- DANH SÁCH THÔNG TIN (Skill List) --- */
+
+        .skill-list {
+            list-style: none; /* Bỏ dấu đầu dòng mặc định */
+            padding: 0;
+            margin: 0;
+        }
+
+        .skill-item {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            display: flex;
+            align-items: start; /* Căn lề trên cho icon */
+        }
+
+        /* Icon pixel giả lập đầu mỗi dòng */
+        .skill-icon {
+            margin-right: 12px;
+            color: #ffff00; /* Màu vàng pixel */
+            width: 25px; /* Cố định chiều rộng cho icon */
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* --- MÀU SẮC CHỮ ĐẶC TRƯNG (Giống game) --- */
+
+        .m-text-green { color: #a5e03a; text-shadow: 1px 1px 0 #000; } /* Xanh cây [MEMBER] */
+        .m-text-gold { color: #ffca28; text-shadow: 1px 1px 0 #000; }  /* Vàng Gacha Coins */
+        .m-text-blue { color: #4db6ac; text-shadow: 1px 1px 0 #000; }  /* Xanh lam */
+        .m-text-red { color: #ff5252; text-shadow: 1px 1px 0 #000; }   /* Đỏ */
+
+        /* --- ANIMATIONS (Hiệu ứng) --- */
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="minecraft-bg"></div>
+
+    <div class="container">
+        <header>
+            <div class="avatar-card">
+                <img src="avatar.png" alt="Minecraft Skin" class="avatar-img">
+            </div>
+
+            <div class="title-group">
+                <h1 class="main-title"><div InGame></div> <span class="m-text-green">ThaoNoob</span></h1>
+                <p class="tagline">Kiến Trúc Sư Hệ Thống & Chuyên Gia "Optimize" Minecraft Server</p>
+            </div>
+        </header>
+
+        <main>
+            
+            <div class="info-block">
+                <div class="block-title">Name: Nguyễn Thị Thanh Thảo 2007</div>
+                <ul class="skill-list">
+                    <li class="skill-item">
+                        <span class="skill-icon">></span>
+                        <div>Với tư cách là một <span class="m-text-blue">Server Developer</span>, tớ biến những dòng code khô khan thành những tính năng khiến người chơi phải "wow".</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon">></span>
+                        <div>Sở trường của tớ là <span class="m-text-red">Optimize (Tối ưu hóa)</span>. Tớ ghét Lag hơn cả ghét bị Creeper nổ banh nhà. Một server chạy mượt 20 TPS chính là niềm hạnh phúc của tớ.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="info-block">
+                <div class="block-title">Kỹ Năng "Bẻ Khóa" Không Gian Khối</div>
+                <ul class="skill-list">
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [PLUGINS MANIPULATOR]</span>: Thành thạo chỉnh sửa (Refactor) và cấu hình các Plugin cốt lõi. Tớ có thể khiến một Plugin cũ kỹ hoạt động trơn tru trên phiên bản 1.21 mới nhất.</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [DATABASE ARCHITECT]</span>: Quản lý SQL/NoSQL cho Server. Dữ liệu người chơi, Rank, Gacha... tất cả đều nằm trong tầm kiểm soát, không bao giờ lo mất túi đồ (Inventory).</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [API INTEGRATION]</span>: Kết nối Discord với Server, tạo hệ thống Notify tự động, làm cho cộng đồng luôn "rôm rả" kể cả khi đang Offline.</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [BUG HUNTER]</span>: Tớ đã tự làm 1 thể loại về rpg rồi và đã làm cho rất nhiều server khác rồi nên xin ứng tuyển vô vị trí này.</div>
+                    </li>
+                </ul>
+            </div>
+
+             <div class="info-block" style="border-color: #ff5252; width: auto; display: inline-block;">
+                <ul class="skill-list"><!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ [SERVER DEV] ThaoNoob</title>
+    <style>
+        /* --- PHONG CÁCH CSS --- */
+        
+        body, html {
+            height: 100%;
+            margin: 0;
+            /* Cố gắng sử dụng font Minecraft, nếu không có thì dùng font pixel mặc định */
+            font-family: 'Minecraftia', 'Courier New', Courier, monospace;
+            color: white;
+            background-color: #0c001a; /* Màu tối dự phòng nếu nền không tải được */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Ngăn chặn thanh cuộn để giữ bố cục */
+        }
+
+        /* Nền phong cảnh Minecraft ban đêm, lấy cảm hứng từ ảnh image_2.png */
+        .minecraft-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* BẠN CẦN CHUẨN BỊ ẢNH NỀN NÀY */
+            background-image: url('background.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            /* Làm tối nền để chữ nổi bật hơn */
+            filter: brightness(60%); 
+        }
+
+        /* Khung chứa nội dung chính, căn giữa màn hình */
+        .container {
+            position: relative;
+            max-width: 900px;
+            width: 90%;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        /* Khu vực Tiêu đề (Header): Chứa Avatar và Tên */
+        header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-out; /* Hiệu ứng hiện dần */
+        }
+
+        /* Thẻ đại diện (Avatar card) */
+        .avatar-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 130px;
+            height: 130px;
+            border: 6px solid white; /* Viền trắng pixel đặc trưng */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6); /* Hiệu ứng bóng đổ */
+            margin-right: 30px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.1); /* Nền mờ cho avatar */
+        }
+
+        /* Hình ảnh Avatar */
+        .avatar-img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+        }
+
+        /* Nhóm Tên và Tagline */
+        .title-group {
+            flex-grow: 1;
+        }
+
+        /* Tiêu đề chính: Tên người chơi */
+        .main-title {
+            font-size: 2.8rem;
+            margin: 0;
+            text-shadow: 3px 3px 0 #000; /* Đổ bóng chữ đen đậm */
+        }
+
+        /* Dòng giới thiệu ngắn (Tagline) */
+        .tagline {
+            font-size: 1.3rem;
+            color: #d1d1d1;
+            margin: 0;
+            margin-top: 8px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        /* --- CÁC KHỐI THÔNG TIN (Info Blocks) --- */
+
+        /* Kiểu dáng chung cho các khối thông tin */
+        .info-block {
+            background-color: rgba(0, 0, 0, 0.75); /* Nền đen trong suốt cho khối */
+            border: 4px solid #fff; /* Viền pixel trắng */
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.6); /* Bóng đổ pixel */
+            animation: slideInUp 0.8s ease-out; /* Hiệu ứng trượt lên */
+        }
+
+        /* Tiêu đề cho các khối: Mô phỏng khối đá/bê tông */
+        .block-title {
+            background-color: #3e3e42; /* Màu xám bê tông của khối */
+            color: white;
+            border: 3px solid white;
+            padding: 8px 18px;
+            margin: -30px -20px 15px -20px; /* Đẩy tiêu đề lên trên viền của khối */
+            display: inline-block;
+            font-size: 1.1rem;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.6);
+            text-transform: uppercase; /* Chữ in hoa */
+        }
+
+        /* --- DANH SÁCH THÔNG TIN (Skill List) --- */
+
+        .skill-list {
+            list-style: none; /* Bỏ dấu đầu dòng mặc định */
+            padding: 0;
+            margin: 0;
+        }
+
+        .skill-item {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            display: flex;
+            align-items: start; /* Căn lề trên cho icon */
+        }
+
+        /* Icon pixel giả lập đầu mỗi dòng */
+        .skill-icon {
+            margin-right: 12px;
+            color: #ffff00; /* Màu vàng pixel */
+            width: 25px; /* Cố định chiều rộng cho icon */
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* --- MÀU SẮC CHỮ ĐẶC TRƯNG (Giống game) --- */
+
+        .m-text-green { color: #a5e03a; text-shadow: 1px 1px 0 #000; } /* Xanh cây [MEMBER] */
+        .m-text-gold { color: #ffca28; text-shadow: 1px 1px 0 #000; }  /* Vàng Gacha Coins */
+        .m-text-blue { color: #4db6ac; text-shadow: 1px 1px 0 #000; }  /* Xanh lam */
+        .m-text-red { color: #ff5252; text-shadow: 1px 1px 0 #000; }   /* Đỏ */
+
+        /* --- ANIMATIONS (Hiệu ứng) --- */
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="minecraft-bg"></div>
+
+    <div class="container">
+        <header>
+            <div class="avatar-card">
+                <img src="avatar.png" alt="Minecraft Skin" class="avatar-img">
+            </div>
+
+            <div class="title-group">
+                <h1 class="main-title">[SERVER DEV] <span class="m-text-green">ThaoNoob</span></h1>
+                <p class="tagline">Kiến Trúc Sư Hệ Thống & Chuyên Gia "Optimize" Minecraft Server</p>
+            </div>
+        </header>
+
+        <main>
+            
+            <div class="info-block">
+                <div class="block-title">Hồ Sơ "Kẻ Điều Khiển" Luật Chơi</div>
+                <ul class="skill-list">
+                    <li class="skill-item">
+                        <span class="skill-icon">></span>
+                        <div>Tớ không chỉ chơi game, tớ là người <span class="m-text-gold">"điều khiển"</span> luật chơi. Với tư cách là một <span class="m-text-blue">Server Developer</span>, tớ biến những dòng code khô khan thành những tính năng khiến người chơi phải "wow".</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon">></span>
+                        <div>Sở trường của tớ là <span class="m-text-red">Optimize (Tối ưu hóa)</span>. Tớ ghét Lag hơn cả ghét bị Creeper nổ banh nhà. Một server chạy mượt 20 TPS chính là niềm hạnh phúc của tớ.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="info-block">
+                <div class="block-title">Kỹ Năng "Bẻ Khóa" Không Gian Khối</div>
+                <ul class="skill-list">
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [PLUGINS MANIPULATOR]</span>: Thành thạo chỉnh sửa (Refactor) và cấu hình các Plugin cốt lõi. Tớ có thể khiến một Plugin cũ kỹ hoạt động trơn tru trên phiên bản 1.21 mới nhất.</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [DATABASE ARCHITECT]</span>: Quản lý SQL/NoSQL cho Server. Dữ liệu người chơi, Rank, Gacha... tất cả đều nằm trong tầm kiểm soát, không bao giờ lo mất túi đồ (Inventory).</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [API INTEGRATION]</span>: Kết nối Discord với Server, tạo hệ thống Notify tự động, làm cho cộng đồng luôn "rôm rả" kể cả khi đang Offline.</div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-icon"></span>
+                        <div><span class="m-text-green">> [BUG HUNTER]</span>: Đọc Console Log là sở thích, sửa NullPointerException là đam mê. Tớ "dọn dẹp" lỗi nhanh hơn cách người chơi đào đá.</div>
+                    </li>
+                </ul>
+            </div>
+
+             <div class="info-block" style="border-color: #ff5252; width: auto; display: inline-block;">
+                <div class="block-title" style="background-color: #4a0000; border-color: #ff5252; margin-left: 0;">Server Admin Status</div>
+                <ul class="skill-list">
+                    <li class="skill-item" style="color: #ff5252;"><span class="m-text-gold">> CURRENT RANK:</span> [SERVER OWNER / DEV]</li>
+                    <li class="skill-item" style="color: #ff5252;"><span class="m-text-gold">> EXPERIENCE:</span> ∞ (Vô hạn Console Log)</li>
+                    <li class="skill-item" style="color: #ff5252;"><span class="m-text-gold">> SPECIALTY:</span> <span class="m-text-blue">Java / PaperMC / Velocity</span></li>
+                </ul>
+            </div>
+            
+        </main>
+    </div>
+
+</body>
+</html>
+            </div>
+            
+        </main>
+    </div>
+
+</body>
+</html>
